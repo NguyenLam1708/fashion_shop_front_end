@@ -106,7 +106,4 @@
   transition: color 0.2s;
 }
 
-.nav-right a:hover {
-  color: #f39c12; /* Màu vàng cam khi hover */
-}
 </style>
