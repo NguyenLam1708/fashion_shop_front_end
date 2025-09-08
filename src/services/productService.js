@@ -28,8 +28,10 @@ export const getProductById = async (id) => {
 }
 
 // Lấy sản phẩm theo categoryId
-export const getProductsByCategory = async (categoryId) => {
-  const res = await api.get(`/products/category/${categoryId}`)
+export const getProductsByCategory = async (categoryId, page = 1, limit = 10) => {
+  const res = await api.get(`/products/category/${categoryId}`, {
+    params: { page, limit }
+  })
   return res.data
 }
 
