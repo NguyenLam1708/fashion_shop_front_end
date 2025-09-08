@@ -1,40 +1,77 @@
 <template>
-  <header class="header">
+  <nav class="navbar">
+    <!-- Logo -->
     <router-link to="/" class="logo">
       <img src="/src/assets/logo.png" alt="Fashion Shop" />
     </router-link>
+
+    <!-- Search -->
     <div class="search-bar">
       <input type="text" placeholder="Bạn đang tìm gì..." />
       <button class="search-btn">
         <i class="fas fa-search" style="color: #222"></i>
       </button>
     </div>
-    <nav class="nav-right">
-        <router-link to="/cart">
-        <span class="icon">
-          <i class="fas fa-shopping-cart"></i>
-        </span>
+
+    <!-- Menu bên phải -->
+    <div class="nav-right">
+      <router-link to="/cart">
+        <span class="icon"><i class="fas fa-shopping-cart"></i></span>
         Giỏ hàng
       </router-link>
-      <router-link to="/login">
-        <span class="icon">
-          <i class="fas fa-user"></i>
-        </span>
+
+      <!-- Nếu chưa login -->
+      <router-link v-if="!userStore.user" to="/login">
+        <span class="icon"><i class="fas fa-user"></i></span>
         Đăng nhập
       </router-link>
-    </nav>
-  </header>
+
+      <!-- Nếu đã login -->
+      <div v-else class="user-menu" @click="toggleMenu">
+        <span class="icon"><i class="fas fa-user"></i></span>
+        {{ userStore.user.name }}
+        <div v-if="showMenu" class="dropdown">
+          <router-link to="/profile">Cập nhật thông tin</router-link>
+          <router-link to="/change-password">Đổi mật khẩu</router-link>
+          <a href="#" @click.prevent="logout">Đăng xuất</a>
+        </div>
+      </div>
+    </div>
+  </nav>
 </template>
 
+<script setup>
+import { ref, onMounted } from "vue"
+import { useRouter } from "vue-router"
+import { useUserStore } from "../stores/user"
+
+const userStore = useUserStore()
+const router = useRouter()
+const showMenu = ref(false)
+
+onMounted(() => {
+  userStore.fetchUser()
+})
+
+const toggleMenu = () => {
+  showMenu.value = !showMenu.value
+}
+
+const logout = () => {
+  userStore.clearUser()
+  router.push("/login")
+}
+</script>
+
 <style scoped>
-.header {
+.navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 2.5rem;
   height: 10vh;
-  background: #fff; /* Đổi nền sang trắng */
-  color: #222;      /* Đổi màu chữ sang đen/xám */
+  background: #fff;
+  color: #222;
   width: 100%;
   position: fixed;
   top: 0;
@@ -48,7 +85,7 @@
   height: 100px;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px #f39c12); /* Bóng vàng nhẹ cho logo */
+  filter: drop-shadow(0 0 8px #f39c12);
 }
 
 .search-bar {
@@ -66,7 +103,7 @@
   border: none;
   font-size: 1rem;
   outline: none;
-  background: #f7f7f7; /* Nền input sáng nhẹ */
+  background: #f7f7f7;
   color: #222;
 }
 
@@ -82,7 +119,6 @@
   transition: background 0.2s;
 }
 
-
 .nav-right {
   display: flex;
   align-items: center;
@@ -97,7 +133,7 @@
 }
 
 .nav-right a {
-  color: #222; /* Đổi màu chữ nav sang đen/xám */
+  color: #222;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -106,4 +142,36 @@
   transition: color 0.2s;
 }
 
+.user-menu {
+  position: relative;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 2000;
+}
+
+.dropdown a,
+.dropdown router-link {
+  padding: 10px 15px;
+  color: #222;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.dropdown a:hover,
+.dropdown router-link:hover {
+  background: #f5f5f5;
+}
 </style>

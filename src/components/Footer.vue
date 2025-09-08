@@ -2,9 +2,9 @@
   <footer class="footer">
     <div class="newsletter">
       <div class="social-icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a><i class="fab fa-facebook-f"></i></a>
+        <a><i class="fab fa-instagram"></i></a>
+        <a><i class="fab fa-youtube"></i></a>
       </div>
     </div>
     <hr />
@@ -76,12 +76,7 @@
   color: #e0e0e0;
   font-size: 16px;
   transition: all 0.3s ease;
-}
-.social-icons a:hover {
-  background: #3498db;
-  color: #fff;
-  transform: translateY(-3px);
-}
+} 
 
 hr {
   border: none;
