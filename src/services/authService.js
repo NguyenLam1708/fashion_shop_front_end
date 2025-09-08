@@ -15,3 +15,15 @@ export const login = async (userData) => {
   }
   return res.data
 }
+
+// Gọi API xác thực OTP
+export const verifyOtp = async (data) => {
+  const res = await api.post('/auth/verify-otp', data)
+  return res.data
+}
+
+// Gọi API gửi lại OTP
+export const resendOtp = async (data) => {
+  const res = await api.post('/auth/resend-otp', data)
+  return res.data
+}
