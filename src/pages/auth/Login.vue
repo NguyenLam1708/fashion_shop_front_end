@@ -5,22 +5,32 @@
       <form @submit.prevent="handleLogin">
         <input v-model="email" type="email" placeholder="Nhập email của bạn..." required />
         <p v-if="emailError" class="error-message">{{ emailError }}</p>
+
         <div class="password-field">
-          <input :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Nhập mật khẩu..." required />
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            v-model="password"
+            placeholder="Nhập mật khẩu..."
+            required
+          />
           <span class="toggle-eye" @click="showPassword = !showPassword">
             <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
           </span>
         </div>
         <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
+
         <div class="forgot-link">
           <router-link to="/forgot-password">Quên mật khẩu?</router-link>
         </div>
+
         <button type="submit">Đăng nhập</button>
       </form>
+
       <p class="register-hint">
         Chưa có tài khoản?
         <router-link to="/register">Đăng ký</router-link>
       </p>
+
       <p v-if="activationNeeded" class="activation-hint">
         Tài khoản chưa kích hoạt?
         <a href="#" @click.prevent="goToVerify">Kích hoạt ngay</a>
@@ -34,9 +44,11 @@ import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "../../stores/user"
 import { login } from "../../services/authService"
+import { useCartStore } from "../../stores/cart" 
 
 const router = useRouter()
 const userStore = useUserStore()
+const cartStore = useCartStore()
 
 const email = ref("")
 const password = ref("")
@@ -59,9 +71,14 @@ const handleLogin = async () => {
 
       // ✅ Fetch user ngay lập tức
       await userStore.fetchUser()
+      await cartStore.fetchCartCount() 
 
-      // ✅ Chuyển hướng
-      router.push("/")
+      // ✅ Điều hướng theo role
+      if (userStore.user?.role === "admin") {
+        router.push("/dashboard")
+      } else {
+        router.push("/")
+      }
     } else if (res.message && res.message.toLowerCase().includes("kích hoạt")) {
       activationNeeded.value = true
     } else if (res.message) {
@@ -104,7 +121,6 @@ const goToVerify = () => {
   box-sizing: border-box;
   margin-top: 70px; /* đẩy xuống đúng bằng header */
 }
-
 
 .login-box {
   background: #fff;
@@ -190,6 +206,7 @@ const goToVerify = () => {
   font-size: 0.95rem;
   color: red;
 }
+
 .password-field {
   position: relative;
   display: flex;
@@ -213,12 +230,14 @@ const goToVerify = () => {
 .toggle-eye:hover {
   color: #888;
 }
+
 .error-message {
   color: #ff5252;
   font-size: 0.95rem;
   margin: 4px 0 0 4px;
   text-align: left;
 }
+
 .activation-hint {
   margin-top: 1rem;
   font-size: 0.95rem;
@@ -235,5 +254,4 @@ const goToVerify = () => {
 .activation-hint a:hover {
   text-decoration: underline;
 }
-
 </style>
