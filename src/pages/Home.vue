@@ -28,15 +28,23 @@
         </div>
       </div>
 
-      <!-- Phân trang -->
-      <div class="pagination" v-if="totalPages > 1">
-        <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
-          &lt;
+      <!-- Pagination -->
+      <div class="pagination">
+        <button :disabled="page === 1" @click="goToPage(1)">«</button>
+        <button :disabled="page === 1" @click="goToPage(page - 1)">‹</button>
+
+        <button
+          v-for="p in visiblePages"
+          :key="p + Math.random()"
+          :class="{ active: p === page }"
+          @click="typeof p === 'number' && goToPage(p)"
+          :disabled="p === '...'"
+        >
+          {{ p }}
         </button>
-        <span>Trang {{ currentPage }} / {{ totalPages }}</span>
-        <button :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)">
-          &gt;
-        </button>
+
+        <button :disabled="page === totalPages" @click="goToPage(page + 1)">›</button>
+        <button :disabled="page === totalPages" @click="goToPage(totalPages)">»</button>
       </div>
     </main>
     <footer />
@@ -44,12 +52,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { getAllProducts } from "../services/productService"
 
 const products = ref([])
 const loading = ref(true)
-const currentPage = ref(1)
+const page = ref(1)
 const totalPages = ref(1)
 
 const getImageUrl = (path) => {
@@ -57,13 +65,13 @@ const getImageUrl = (path) => {
   return `http://localhost:8080/${path}`
 }
 
-const fetchProducts = async (page = 1) => {
+const fetchProducts = async (pageParam = 1) => {
   loading.value = true
   try {
-    const res = await getAllProducts(page, 15) // 15 sản phẩm / trang
+    const res = await getAllProducts(pageParam, 15)
     products.value = res.data.products
     totalPages.value = res.data.totalPages
-    currentPage.value = res.data.currentPage
+    page.value = res.data.currentPage
   } catch (err) {
     console.error("Lỗi lấy sản phẩm:", err)
   } finally {
@@ -71,11 +79,32 @@ const fetchProducts = async (page = 1) => {
   }
 }
 
-const changePage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    fetchProducts(page)
+const goToPage = (p) => {
+  if (p >= 1 && p <= totalPages.value) {
+    fetchProducts(p)
   }
 }
+
+// Phân trang rút gọn nếu nhiều trang
+const visiblePages = computed(() => {
+  const pages = []
+  const total = totalPages.value
+  const current = page.value
+
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) pages.push(i)
+  } else {
+    if (current <= 4) {
+      pages.push(1, 2, 3, 4, 5, '...', total)
+    } else if (current >= total - 3) {
+      pages.push(1, '...', total-4, total-3, total-2, total-1, total)
+    } else {
+      pages.push(1, '...', current-1, current, current+1, '...', total)
+    }
+  }
+
+  return pages
+})
 
 onMounted(() => fetchProducts(1))
 </script>
@@ -116,7 +145,7 @@ onMounted(() => fetchProducts(1))
 
 .product-card img {
   width: 100%;
-  height: 160px; /* ảnh nhỏ hơn để card cao hơn */
+  height: 160px;
   object-fit: cover;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -148,36 +177,31 @@ onMounted(() => fetchProducts(1))
   margin: 20px 0;
 }
 
-/* Phân trang */
+/* Pagination */
 .pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   margin-top: 20px;
-  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
 }
 
 .pagination button {
-  background-color: #000;
-  color: #fff;
-  border: none;
+  border: 1px solid #ddd;
+  background: #fff;
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.pagination button:hover:not(:disabled) {
-  background-color: #222;
+.pagination button.active {
+  background: #000;
+  color: #fff;
+  font-weight: bold;
 }
 
 .pagination button:disabled {
-  background-color: #888;
+  background: #f5f5f5;
+  color: #aaa;
   cursor: not-allowed;
-}
-
-.pagination span {
-  font-size: 14px;
 }
 </style>
