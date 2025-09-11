@@ -6,6 +6,10 @@ export const useUserStore = defineStore("user", {
     user: null,
     loading: false
   }),
+  getters: {
+    isLoggedIn: (state) => !!state.user,
+    isAdmin: (state) => state.user?.role === "admin"
+  },
   actions: {
     setUser(user) {
       this.user = user
