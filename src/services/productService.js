@@ -1,14 +1,7 @@
 import api from './api'
 
 // Tạo sản phẩm mới
-export const createProduct = async (productData, files) => {
-  const formData = new FormData()
-  for (const key in productData) {
-    formData.append(key, productData[key])
-  }
-  if (files && files.length > 0) {
-    files.forEach(file => formData.append('files', file))
-  }
+export const createProduct = async (formData) => {
   const res = await api.post('/products', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
@@ -41,15 +34,7 @@ export const deleteProduct = async (id) => {
   return res.data
 }
 
-// Cập nhật sản phẩm
-export const updateProduct = async (id, productData, files) => {
-  const formData = new FormData()
-  for (const key in productData) {
-    formData.append(key, productData[key])
-  }
-  if (files && files.length > 0) {
-    files.forEach(file => formData.append('files', file))
-  }
+export const updateProduct = async (id, formData) => {
   const res = await api.put(`/products/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
