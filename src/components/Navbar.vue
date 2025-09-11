@@ -15,9 +15,12 @@
 
     <!-- Menu bên phải -->
     <div class="nav-right">
-      <router-link to="/cart">
+      <router-link to="/cart" class="cart-link">
         <span class="icon"><i class="fas fa-shopping-cart"></i></span>
         Giỏ hàng
+        <span v-if="cartStore.cartCount > 0" class="cart-badge">
+          {{ cartStore.cartCount }}
+        </span>
       </router-link>
 
       <!-- Nếu chưa login -->
@@ -33,6 +36,7 @@
         <div v-if="showMenu" class="dropdown">
           <router-link to="/profile">Cập nhật thông tin</router-link>
           <router-link to="/change-password">Đổi mật khẩu</router-link>
+          <router-link to="/orders">Đơn hàng</router-link>
           <a href="#" @click.prevent="logout">Đăng xuất</a>
         </div>
       </div>
@@ -44,13 +48,16 @@
 import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "../stores/user"
+import { useCartStore } from "../stores/cart"
 
 const userStore = useUserStore()
+const cartStore = useCartStore()
 const router = useRouter()
 const showMenu = ref(false)
 
 onMounted(() => {
   userStore.fetchUser()
+  cartStore.fetchCartCount()
 })
 
 const toggleMenu = () => {
@@ -173,5 +180,24 @@ const logout = () => {
 .dropdown a:hover,
 .dropdown router-link:hover {
   background: #f5f5f5;
+}
+
+.cart-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -14px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 3px 7px;
+  line-height: 1;
 }
 </style>
