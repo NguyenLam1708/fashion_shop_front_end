@@ -26,12 +26,27 @@
 
       <!-- Phân trang -->
       <div class="pagination" v-if="totalPages > 1">
+        <button :disabled="currentPage === 1" @click="changePage(1)">
+          &laquo;
+        </button>
         <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
           &lt;
         </button>
-        <span>Trang {{ currentPage }} / {{ totalPages }}</span>
+
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          :class="{ active: currentPage === page }"
+          @click="changePage(page)"
+        >
+          {{ page }}
+        </button>
+
         <button :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)">
           &gt;
+        </button>
+        <button :disabled="currentPage === totalPages" @click="changePage(totalPages)">
+          &raquo;
         </button>
       </div>
     </div>
@@ -183,33 +198,35 @@ watch(() => route.params.slug, (newSlug) => {
 /* Phân trang */
 .pagination {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
   margin-top: 20px;
-  font-weight: 600;
 }
 
 .pagination button {
-  background-color: #000;
-  color: #fff;
-  border: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
   padding: 6px 12px;
   border-radius: 4px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #222;
+  background-color: #000;
+  color: #fff;
 }
 
 .pagination button:disabled {
-  background-color: #888;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.pagination span {
-  font-size: 14px;
+.pagination button.active {
+  background-color: #000;
+  color: #fff;
+  font-weight: bold;
 }
 </style>
