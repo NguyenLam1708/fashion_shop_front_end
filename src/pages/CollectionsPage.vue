@@ -91,7 +91,7 @@ const fetchProducts = async (page = 1) => {
 
     categoryName.value = category.name;
 
-    const res = await getProductsByCategory(category._id, page);
+    const res = await getProductsByCategory(category._id, page, 15);
     products.value = res.data.products || [];
     totalPages.value = res.data.totalPages || 1;
     currentPage.value = res.data.currentPage || 1;
@@ -146,7 +146,7 @@ watch(() => route.params.slug, (newSlug) => {
 
 .products {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(5, 1fr); /* 5 sản phẩm / hàng */
   gap: 16px;
   margin-top: 16px;
 }
@@ -155,44 +155,55 @@ watch(() => route.params.slug, (newSlug) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 220px;
   border: 1px solid #eee;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 
 .product-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+/* Ảnh */
 .product-card img {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  border-radius: 6px;
+  margin-bottom: 10px;
 }
 
+/* Tên sản phẩm */
 .product-card h3 {
   font-size: 14px;
   font-weight: 600;
   margin: 4px 0;
   text-align: center;
-  white-space: nowrap;
+
+  /* Giữ 2 dòng đều nhau */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
+  line-height: 1.3;
+  height: 36px; /* fix để card không cao thấp */
 }
 
+/* Giá */
 .product-card p {
   font-size: 13px;
   font-weight: 500;
   color: #333;
   margin: 2px 0;
+  text-align: center;
 }
 
 /* Phân trang */
