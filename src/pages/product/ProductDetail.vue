@@ -41,8 +41,8 @@
 
         <!-- Nút hành động -->
         <div class="action-buttons">
-          <button class="add-to-cart" @click="addToCart">Thêm vào giỏ hàng</button>
-          <button class="buy-now" @click="buyNow">Mua ngay</button>
+          <button class="add-to-cart" @click="handleAddToCart">Thêm vào giỏ hàng</button>
+          <button class="buy-now" @click="handleBuyNow">Mua ngay</button>
         </div>
       </div>
     </div>
@@ -63,10 +63,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { getProductById } from '../../services/productService'
+import { addToCart } from '../../services/cartService'
+import { useCartStore } from "../../stores/cart" 
 
+const cartStore = useCartStore()
 const route = useRoute()
+const router = useRouter()
 const productId = route.params.id
 
 const product = ref(null)
@@ -93,8 +97,15 @@ const fetchProduct = async () => {
 const increaseQuantity = () => { if(quantity.value < product.value.quantity) quantity.value++ }
 const decreaseQuantity = () => { if(quantity.value > 1) quantity.value-- }
 
-const addToCart = () => { alert(`Đã thêm ${quantity.value} sản phẩm "${product.value.name}" vào giỏ hàng`) }
-const buyNow = () => { alert(`Bạn đã chọn mua ngay ${quantity.value} sản phẩm "${product.value.name}"`) }
+// gọi API thêm vào giỏ
+const handleAddToCart = async () => {
+  try {
+    await addToCart(product.value._id, quantity.value)
+    await cartStore.fetchCartCount()   // 🔥 cập nhật lại state ngay
+  } catch (err) {
+    console.error('Lỗi thêm giỏ hàng:', err)
+  }
+}
 
 const prevImage = () => { selectedImage.value = selectedImage.value > 0 ? selectedImage.value-1 : product.value.imageUrl.length-1 }
 const nextImage = () => { selectedImage.value = selectedImage.value < product.value.imageUrl.length-1 ? selectedImage.value+1 : 0 }
