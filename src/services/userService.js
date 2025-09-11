@@ -4,11 +4,6 @@ export const getMe = () => {
   return api.get('/users/my-info')
 }
 
-// Lấy thông tin user theo ID
-export const getUserById = (id) => {
-  return api.get(`/users/${id}`)
-}
-
 // Đổi mật khẩu
 export const changePassword = (oldPassword, newPassword, confirmPassword) => {
   return api.patch('/users/change-password', {
@@ -38,4 +33,12 @@ export const getAllUsers = (page = 1, limit = 10) => {
 // Cập nhật user (admin)
 export const updateUser = (id, data) => {
   return api.put(`/users/${id}`, data)
+}
+
+export const banUser = (id) => {
+  return api.patch(`/users/${id}/ban`)
+}
+
+export const activeUser = (id) => {
+  return api.patch(`/users/${id}/active`)
 }
