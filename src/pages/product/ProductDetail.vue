@@ -106,6 +106,16 @@ const handleAddToCart = async () => {
     console.error('Lỗi thêm giỏ hàng:', err)
   }
 }
+const handleBuyNow = () => {
+  // Chuyển sang trang checkout, truyền id sản phẩm và số lượng
+  router.push({
+    name: "Checkout",
+    query: {
+      items: JSON.stringify([product.value._id]),
+      qty: quantity.value, // truyền thêm số lượng
+    },
+  })
+}
 
 const prevImage = () => { selectedImage.value = selectedImage.value > 0 ? selectedImage.value-1 : product.value.imageUrl.length-1 }
 const nextImage = () => { selectedImage.value = selectedImage.value < product.value.imageUrl.length-1 ? selectedImage.value+1 : 0 }
